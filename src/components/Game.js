@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Tablero inicial del juego Senku
 const initialBoard = () => {
@@ -68,7 +68,17 @@ const checkEndGame = (board) => {
 const Game = ({ endGame }) => {
   const [board, setBoard] = useState(initialBoard()); // Estado del tablero
   const [selected, setSelected] = useState(null); // Ficha seleccionada
+  const [startTime, setStartTime] = useState(Date.now());
+  const [timeElapsed, setTimeElapsed] = useState(0);
 
+  const countRemainingPieces = (board) => {
+    return board.flat().filter(cell => cell === 1).length;
+  };
+  
+
+  useEffect(() => {
+    setStartTime(Date.now());
+  }, []);
   // Manejar clics en las celdas del tablero
   const handleCellClick = (row, col) => {
     if (selected) {
@@ -93,11 +103,19 @@ const Game = ({ endGame }) => {
 
         // Comprobar si el juego ha terminado
         if (checkEndGame(newBoard)) {
-          endGame(); // Si no hay más movimientos válidos, termina el juego
+          setTimeElapsed(Math.floor((Date.now() - startTime) / 1000)); // Tiempo en segundos
+
+        // Contar las fichas restantes
+        const remainingPieces = countRemainingPieces(newBoard);
+
+        // Llamar a la función endGame y pasarle el tiempo y las fichas restantes
+        endGame(remainingPieces, timeElapsed); // Si no hay más movimientos válidos, termina el juego
         }
         return;
       }
     }
+
+
 
     // Si no hay una ficha seleccionada, seleccionamos la nueva ficha
     if (board[row][col] === 1) {
