@@ -68,3 +68,82 @@ h2 {
   visibility: hidden;
 }
 
+/* Estilos del apartado GameOver */
+.game-over, .home{
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.game-over h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.game-over p {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.game-over label {
+  display: block;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.game-over input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  transition: border-color 0.3s ease;
+}
+
+.game-over input:focus {
+  border-color: #007aff;
+  outline: none;
+}
+
+.game-over button, .home button {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.game-over button:hover, .home button:hover {
+  background-color: #005bb5;
+}
+
+.game-over button:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}
+
+.game-over .message {
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.game-over .success {
+  color: green;
+}
+
+.game-over .error {
+  color: red;
+}

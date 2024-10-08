@@ -10,7 +10,6 @@ const GameOver = ({ remainingPieces, timeElapsed }) => {
     if (name && email) {
       setIsSubmitting(true);
 
-      // Crear los datos que se van a enviar
       const result = {
         name,
         email,
@@ -18,7 +17,6 @@ const GameOver = ({ remainingPieces, timeElapsed }) => {
         timeElapsed,
       };
 
-      // Enviar los datos a Google Sheet usando Google Apps Script
       fetch('https://script.google.com/macros/s/AKfycbxl0NW0XqdJb0Y2h305mYJ_qFhw-nQ4oFLrL_e1ywLOu0ADn7BH7CKbr5qS99zOcaRn/exec', {
         method: 'POST',
         body: JSON.stringify(result),
@@ -29,14 +27,14 @@ const GameOver = ({ remainingPieces, timeElapsed }) => {
         .then(response => response.text())
         .then(data => {
           console.log("Resultado guardado:", data);
-          setSubmissionStatus('success'); // Éxito al guardar
+          setSubmissionStatus('success');
         })
         .catch(error => {
           console.error("Error al guardar:", error);
-          setSubmissionStatus('error'); // Error al guardar
+          setSubmissionStatus('error');
         })
         .finally(() => {
-          setIsSubmitting(false); // Termina el envío
+          setIsSubmitting(false);
         });
     }
   };
@@ -58,8 +56,8 @@ const GameOver = ({ remainingPieces, timeElapsed }) => {
         {isSubmitting ? 'Guardando...' : 'Guardar Resultado'}
       </button>
 
-      {submissionStatus === 'success' && <p>¡Resultado guardado con éxito!</p>}
-      {submissionStatus === 'error' && <p>Error al guardar el resultado. Intenta nuevamente.</p>}
+      {submissionStatus === 'success' && <p className="message success">¡Resultado guardado con éxito!</p>}
+      {submissionStatus === 'error' && <p className="message error">Error al guardar el resultado. Intenta nuevamente.</p>}
     </div>
   );
 };
