@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import GameOver from './GameOver';
 
 // Tablero inicial del juego Senku
-const initialBoard = () => {
-  return [
-    [null, null, 1, 1, 1, null, null], // Las esquinas son null (vacías)
-    [null, null, 1, 1, 1, null, null],
-    [1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 0, 1, 1, 1], // El espacio vacío inicial es 0
-    [1, 1, 1, 1, 1, 1, 1],
-    [null, null, 1, 1, 1, null, null],
-    [null, null, 1, 1, 1, null, null],
-  ];
-};
+const initialBoard = () => [
+  [null, null, 1, 1, 1, null, null],
+  [null, null, 1, 1, 1, null, null],
+  [1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 0, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1],
+  [null, null, 1, 1, 1, null, null],
+  [null, null, 1, 1, 1, null, null],
+];
 
 // Verificar si el movimiento es válido
 const isValidMove = (board, row, col, direction) => {
@@ -24,7 +23,7 @@ const isValidMove = (board, row, col, direction) => {
 
 // Realizar el movimiento en el tablero
 const move = (board, row, col, direction) => {
-  const newBoard = board.map(arr => arr.slice()); // Copiar el tablero
+  const newBoard = board.map(arr => arr.slice());
 
   if (direction === 'up') {
     newBoard[row][col] = 0;
@@ -52,41 +51,39 @@ const checkEndGame = (board) => {
   for (let row = 0; row < board.length; row++) {
     for (let col = 0; col < board[row].length; col++) {
       if (board[row][col] === 1) {
-        // Comprobar si hay algún movimiento válido para la ficha en (row, col)
         if (isValidMove(board, row, col, 'up') ||
             isValidMove(board, row, col, 'down') ||
             isValidMove(board, row, col, 'left') ||
             isValidMove(board, row, col, 'right')) {
-          return false; // Hay al menos un movimiento válido, el juego no ha terminado
+          return false;
         }
       }
     }
   }
-  return true; // No hay movimientos válidos, el juego ha terminado
+  return true;
 };
 
-const Game = ({ endGame }) => {
-  const [board, setBoard] = useState(initialBoard()); // Estado del tablero
-  const [selected, setSelected] = useState(null); // Ficha seleccionada
+const Game = () => {
+  const [board, setBoard] = useState(initialBoard());
+  const [selected, setSelected] = useState(null);
   const [startTime, setStartTime] = useState(Date.now());
   const [timeElapsed, setTimeElapsed] = useState(0);
-
-  const countRemainingPieces = (board) => {
-    return board.flat().filter(cell => cell === 1).length;
-  };
-  
+  const [remainingPieces, setRemainingPieces] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
     setStartTime(Date.now());
   }, []);
-  // Manejar clics en las celdas del tablero
+
+  const countRemainingPieces = (board) => {
+    return board.flat().filter(cell => cell === 1).length;
+  };
+
   const handleCellClick = (row, col) => {
     if (selected) {
-      // Si ya hay una ficha seleccionada, intentamos moverla
       const [selRow, selCol] = selected;
       let newBoard = null;
 
-      // Verificar las posibles direcciones
       if (row === selRow - 2 && col === selCol && isValidMove(board, selRow, selCol, 'up')) {
         newBoard = move(board, selRow, selCol, 'up');
       } else if (row === selRow + 2 && col === selCol && isValidMove(board, selRow, selCol, 'down')) {
@@ -98,47 +95,60 @@ const Game = ({ endGame }) => {
       }
 
       if (newBoard) {
-        setBoard(newBoard); // Actualizar el estado del tablero
-        setSelected(null); // Deseleccionar la ficha después de moverla
+        setBoard(newBoard);
+        setSelected(null);
 
-        // Comprobar si el juego ha terminado
+        // Verificar si el juego ha terminado
         if (checkEndGame(newBoard)) {
-          setTimeElapsed(Math.floor((Date.now() - startTime) / 1000)); // Tiempo en segundos
-
-        // Contar las fichas restantes
-        const remainingPieces = countRemainingPieces(newBoard);
-
-        // Llamar a la función endGame y pasarle el tiempo y las fichas restantes
-        endGame(remainingPieces, timeElapsed); // Si no hay más movimientos válidos, termina el juego
+          setTimeElapsed(Math.floor((Date.now() - startTime) / 1000));
+          setRemainingPieces(countRemainingPieces(newBoard));
+          setGameOver(true);
         }
         return;
       }
     }
 
-
-
-    // Si no hay una ficha seleccionada, seleccionamos la nueva ficha
     if (board[row][col] === 1) {
       setSelected([row, col]);
     }
   };
 
   return (
-    <div className="game">
-      <h2>Senku</h2>
-      <div className="board">
-        {board.map((row, rowIndex) => (
-          row.map((cell, colIndex) => (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              className={`cell ${cell === null ? 'empty' : ''} ${selected && selected[0] === rowIndex && selected[1] === colIndex ? 'selected' : ''}`}
-              onClick={() => cell !== null && handleCellClick(rowIndex, colIndex)}
-            >
-              {cell === 1 ? '⚫' : cell === 0 ? '⚪' : ''}
-            </div>
-          ))
-        ))}
+    <div>
+      {!gameOver ? (
+      <div className='container'>
+        <div className="game">
+          <h2>Senku</h2>
+          <div className="board">
+            {board.map((row, rowIndex) =>
+              row.map((cell, colIndex) => (
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  className={`cell ${cell === null ? 'empty' : ''} ${selected && selected[0] === rowIndex && selected[1] === colIndex ? 'selected' : ''}`}
+                  onClick={() => cell !== null && handleCellClick(rowIndex, colIndex)}
+                >
+                  {cell === 1 ? '⚫' : cell === 0 ? '⚪' : ''}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+        <div className="instructions game">
+          <h5>Instrucciones</h5>
+          <p>
+            El jugador debe mover una pieza (negra) por vez. <br/>
+            Las piezas solo pueden moverse capturando mediante <br/>
+            un "Salto" sobre otra (como en las damas). Solo se <br/>
+            puede capturar en horizontal o en vertical, nunca <br/>
+            en diagonal. Así, al principio, solo pocas tienen <br/>
+            posibilidad de moverse, capturando una.
+          </p>
+          <button onClick={() => window.location.reload()} className="btn-restart">Reiniciar</button>
+        </div>
       </div>
+      ) : (
+        <GameOver remainingPieces={remainingPieces} timeElapsed={timeElapsed} />
+      )}
     </div>
   );
 };
